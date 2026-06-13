@@ -117,7 +117,7 @@ New `.env` values wired through `application.yml` + `@Value`:
 | Daytona | ✅ **[LIVE]** | Region fix worked — real sandbox provisioned + torn down; real UUID stored as `daytona_job_id`. |
 | TokenRouter | reaches + auths, then falls back | HTTP 503 `No available channel for model kimi-k2.6 under group default` — the model name isn't in the TokenRouter account's catalog. Set `KIMI_MODEL` to a model they actually expose. |
 | Kimi direct | 401 | Key invalid for `api.moonshot.cn` — it's meant to go via TokenRouter. |
-| SenseNova (velaalpha) | reaches + auths, then falls back | `GET /v1/models` works (only model: `vela-alpha`), but `POST /v1/chat/completions` returns `invalid arguments` for **every** request shape tried (text-only, parts, both image forms, both model names, streaming). Gateway isn't serving standard OpenAI inference for this key — needs their API spec / provisioning. |
+| SenseNova (velaalpha) | wired correctly; rate-limited | Model set to **`vela-alpha`** (the only one in `GET /v1/models`; multimodal). The earlier `invalid arguments` was a **UTF-8 BOM** that PowerShell's `Set-Content -Encoding utf8` prepended to my curl test files — the Java client sends clean JSON and is unaffected. With `vela-alpha` + clean body the call is accepted but the shared key currently returns **HTTP 429 `rate_limit_exceeded`**, so it falls back to mock. Will return live signals once the key isn't throttled. |
 | Bright Data | proxy connect timeout | `Test-NetConnection brd.superproxy.io:33335` → ping OK, **TCP port blocked** from this machine (firewall). Wiring is correct; works where 33335 is reachable. |
 
 Every failure still falls back to mock cleanly — the SKU-001 cycle reliably
