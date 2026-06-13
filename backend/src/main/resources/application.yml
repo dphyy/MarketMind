@@ -1,0 +1,48 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/marketmind}
+    username: ${DB_USER:marketmind}
+    password: ${DB_PASSWORD:marketmind}
+  jpa:
+    hibernate:
+      ddl-auto: none        # schema is owned by db/schema.sql, not Hibernate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: always          # re-run schema + seed on every boot (schema drops first)
+      schema-locations: classpath:db/schema.sql
+      data-locations: classpath:db/seed.sql
+
+server:
+  port: 8080
+
+marketmind:
+  # Sponsor API config. Left blank for the mock-first phase — the agent runs
+  # entirely on seed data until these are filled in.
+  brightdata:
+    api-key: ${BRIGHTDATA_API_KEY:}
+    zone: web_unlocker1
+  sensenova:
+    api-key: ${SENSENOVA_API_KEY:}
+    base-url: ${SENSENOVA_BASE_URL:https://api.sensenova.cn/v1}
+  kimi:
+    # NOTE: confirm the base-url + model against the hackathon Kimi docs
+    # (platform.kimi.ai). The voucher key may target a different endpoint.
+    api-key: ${KIMI_API_KEY:}
+    base-url: ${KIMI_BASE_URL:https://api.moonshot.cn/v1}
+    model: ${KIMI_MODEL:kimi-k2.6}
+  tokenrouter:
+    api-key: ${TOKENROUTER_API_KEY:}
+    base-url: ${TOKENROUTER_BASE_URL:}
+  daytona:
+    api-key: ${DAYTONA_API_KEY:}
+    base-url: ${DAYTONA_BASE_URL:}
+  agent:
+    schedule-cron: "0 */15 * * * *"   # every 15 minutes
+    mock-fallback-enabled: true        # fall back to seed data if a live call fails
+
+cors:
+  allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://localhost:3000}
